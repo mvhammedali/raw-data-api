@@ -179,7 +179,27 @@ def get_queue_info():
     return JSONResponse(content=queue_info)
 
 
-@router.get("/queue/details/{queue_name}/")
+@router.get(
+    "/queue/details/{queue_name}/",
+    summary="Get Queue Details",
+    tags=["Queue"],
+    responses={
+        200: {
+            "description": "Success Response",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "index": 0,
+                            "id": "1b505c44-5757-4a71-8f7d-46abddf9b3fd",
+                            "args": "({'output_type': 'shp', 'geometry_type': None, 'centroid': False, 'use_st_within': True, 'filters': None, ...,)",
+                        }
+                    ]
+                }
+            },
+        },
+    },
+)
 @version(1)
 def get_list_details(
     queue_name: str,
