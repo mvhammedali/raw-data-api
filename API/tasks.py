@@ -137,7 +137,19 @@ def inspect_workers(
     return JSONResponse(content=response_data)
 
 
-@router.get("/ping/")
+@router.get(
+    "/ping/",
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {"celery@default_worker": {"ok": "pong"}}
+                }
+            },
+        }
+    },
+)
 @version(1)
 def ping_workers():
     """Pings available workers
