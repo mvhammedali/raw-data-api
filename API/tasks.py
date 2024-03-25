@@ -162,7 +162,24 @@ def discard_all_waiting_tasks(user: AuthUser = Depends(admin_required)):
 queues = [DEFAULT_QUEUE_NAME, ONDEMAND_QUEUE_NAME]
 
 
-@router.get("/queue/")
+@router.get(
+    "/queue/",
+    summary="Get Queue Length",
+    tags=["Queue"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "raw_daemon": {"length": 4},
+                        "raw_ondemand": {"length": 5},
+                    }
+                }
+            },
+        }
+    },
+)
 @version(1)
 def get_queue_info():
     """
