@@ -188,7 +188,22 @@ def get_list_details(
         description="Includes arguments of task",
     ),
 ):
-    if queue_name not in queues:
+    """
+    Retrieve details of a specific queue.
+
+    Args:
+    - `queue_name` (str): Name of the queue.
+    - `args` (bool, optional): Whether to include task arguments. Defaults to `False`.
+
+    Raises:
+    - `HTTPException`: If the specified queue does not exist.
+
+    Returns:
+    - `JSONResponse`: Details of the tasks in the queue.
+    """
+    try:
+        queues.index(queue_name)
+    except ValueError:
         raise HTTPException(status_code=404, detail=f"Queue '{queue_name}' not found")
     redis_client = redis.StrictRedis.from_url(CELERY_BROKER_URL)
 
