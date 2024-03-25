@@ -165,6 +165,9 @@ queues = [DEFAULT_QUEUE_NAME, ONDEMAND_QUEUE_NAME]
 @router.get("/queue/")
 @version(1)
 def get_queue_info():
+    """
+    This endpoint allows you to retrieve length of each queue.
+    """
     queue_info = {}
     redis_client = redis.StrictRedis.from_url(CELERY_BROKER_URL)
 
