@@ -173,7 +173,6 @@ def discard_all_waiting_tasks(user: AuthUser = Depends(admin_required)):
 
 queues = [DEFAULT_QUEUE_NAME, ONDEMAND_QUEUE_NAME]
 
-
 @router.get(
     "/queue/",
     summary="Get Queue Length",
