@@ -137,7 +137,19 @@ def inspect_workers(
     return JSONResponse(content=response_data)
 
 
-@router.get("/ping/")
+@router.get(
+    "/ping/",
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {"celery@default_worker": {"ok": "pong"}}
+                }
+            },
+        }
+    },
+)
 @version(1)
 def ping_workers():
     """Pings available workers
@@ -161,10 +173,29 @@ def discard_all_waiting_tasks(user: AuthUser = Depends(admin_required)):
 
 queues = [DEFAULT_QUEUE_NAME, ONDEMAND_QUEUE_NAME]
 
-
-@router.get("/queue/")
+@router.get(
+    "/queue/",
+    summary="Get Queue Length",
+    tags=["Queue"],
+    responses={
+        200: {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "raw_daemon": {"length": 4},
+                        "raw_ondemand": {"length": 5},
+                    }
+                }
+            },
+        }
+    },
+)
 @version(1)
 def get_queue_info():
+    """
+    This endpoint allows you to retrieve length of each queue.
+    """
     queue_info = {}
     redis_client = redis.StrictRedis.from_url(CELERY_BROKER_URL)
 
@@ -179,7 +210,27 @@ def get_queue_info():
     return JSONResponse(content=queue_info)
 
 
-@router.get("/queue/details/{queue_name}/")
+@router.get(
+    "/queue/details/{queue_name}/",
+    summary="Get Queue Details",
+    tags=["Queue"],
+    responses={
+        200: {
+            "description": "Success Response",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "index": 0,
+                            "id": "1b505c44-5757-4a71-8f7d-46abddf9b3fd",
+                            "args": "({'output_type': 'shp', 'geometry_type': None, 'centroid': False, 'use_st_within': True, 'filters': None, ...,)",
+                        }
+                    ]
+                }
+            },
+        },
+    },
+)
 @version(1)
 def get_list_details(
     queue_name: str,
@@ -188,7 +239,23 @@ def get_list_details(
         description="Includes arguments of task",
     ),
 ):
-    if queue_name not in queues:
+    """
+    Retrieve details of a specific queue.
+
+    Args:
+    - `queue_name` (str): Name of the queue.
+    - `args` (bool, optional): Whether to include task arguments. Defaults to `False`.
+
+    Raises:
+    - `HTTPException`: If the specified queue does not exist.
+
+    Returns:
+    - `JSONResponse`: Details of the tasks in the queue.
+    """
+
+    try:
+        queues.index(queue_name)
+    except ValueError:
         raise HTTPException(status_code=404, detail=f"Queue '{queue_name}' not found")
     redis_client = redis.StrictRedis.from_url(CELERY_BROKER_URL)
 
