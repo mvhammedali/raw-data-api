@@ -253,6 +253,7 @@ def get_list_details(
     Returns:
     - `JSONResponse`: Details of the tasks in the queue.
     """
+
     try:
         queues.index(queue_name)
     except ValueError:
